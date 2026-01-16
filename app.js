@@ -8,25 +8,23 @@ import { errorHandler } from './middlewares/error.middleware.js';
 const app = express();
 
 // Middleware
-// CORS configuration - allow both localhost and Vercel deployed frontend
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:3000',
-  process.env.FRONTEND_URL,
-].filter(Boolean);
-
+// CORS configuration - allow all origins for Vercel deployment
+// In production, you can restrict this to specific domains for better security
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      // Allow all origins in production for now (you can restrict this)
-      callback(null, true);
+    // Allow requests with no origin (like mobile apps, Postman, or server-to-server)
+    if (!origin) {
+      return callback(null, true);
     }
+    
+    // Allow all origins for now (you can restrict this later for security)
+    // For production, you might want to check against a whitelist
+    callback(null, true);
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Length', 'Content-Type'],
 }));
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
