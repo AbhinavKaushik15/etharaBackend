@@ -2,7 +2,7 @@ import express from "express";
 import connectToMongo from "./database/db.js";
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 connectToMongo();
 
 app.listen(port, () => {
