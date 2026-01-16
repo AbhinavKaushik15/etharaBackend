@@ -1,10 +1,21 @@
-import express from "express";
-import connectToMongo from "./database/db.js";
+import express from 'express';
+import connectToMongo from './database/db.js';
 
 const app = express();
-const port = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
+
+// DB connect
 connectToMongo();
 
-app.listen(port, () => {
-  console.log(`Example app listening the http://localhost:${port}`);
+// middleware
+app.use(express.json());
+
+// test route
+app.get('/', (req, res) => {
+  res.send('Server is running');
+});
+
+// listen
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
