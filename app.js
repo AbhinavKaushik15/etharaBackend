@@ -8,8 +8,14 @@ import { errorHandler } from './middlewares/error.middleware.js';
 const app = express();
 
 // Middleware
-// CORS configuration - allow all origins for Vercel deployment
-// In production, you can restrict this to specific domains for better security
+// CORS configuration - allow Vercel frontend and localhost for development
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  process.env.FRONTEND_URL, // Vercel frontend URL
+  // Add your Vercel frontend URL here if you want to restrict CORS
+].filter(Boolean);
+
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps, Postman, or server-to-server)
@@ -17,9 +23,18 @@ app.use(cors({
       return callback(null, true);
     }
     
-    // Allow all origins for now (you can restrict this later for security)
-    // For production, you might want to check against a whitelist
-    callback(null, true);
+    // Allow Vercel domains and localhost
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.includes('vercel.app') ||
+      origin.includes('localhost')
+    ) {
+      callback(null, true);
+    } else {
+      // For production, you can restrict this to specific domains
+      // For now, allow all origins to ensure it works
+      callback(null, true);
+    }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
